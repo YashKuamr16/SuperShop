@@ -381,23 +381,22 @@ def paymentSuccessPage(request, id, rppid, rpoid, rpsid):
 
 
 @login_required(login_url="/login/")
-def confirmationPage(Request):
+def confirmationPage(Request,id):
     try:
         buyer = Buyer.objects.get(username=Request.user.username)
-        checkout = Checkout.objects.filter(buyer=buyer).order_by("-id").first()
-        cart = CheckoutProduct.objects.filter(
-            checkout=Checkout.objects.get(id=checkout.id))
+        checkout=Checkout.objects.get(id=id)
+        cart = CheckoutProduct.objects.filter(checkout=checkout)
         subtotal = 0
         shipping = 0
         total = 0
         for item in cart:
             subtotal = subtotal + item.total
-        if (subtotal > 0 and subtotal < 1000):
+        if(subtotal>0 and subtotal<1000):
             shipping = 150
-        total = subtotal + shipping
-        return render(Request, "confirmation.html", {'cart': cart, 'total': total, 'subtotal': subtotal, 'shipping': shipping, 'buyer': buyer, 'checkout': checkout})
+        total = subtotal+shipping
+        return render(Request,"confirmation.html",{'cart':cart,'subtotal':subtotal,'shipping':shipping,'total':total,'buyer':buyer,'checkout':checkout})
     except:
-        return HttpResponseRedirect("/admin/")
+       return HttpResponseRedirect("/admin/")
 
 
 def newslatterSubscribePage(Request):
